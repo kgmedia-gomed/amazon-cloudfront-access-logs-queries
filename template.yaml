@@ -59,12 +59,12 @@ Resources:
                   Action:
                     - s3:ListBucket
                     - s3:GetBucketLocation
-                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}-${AWS::AccountId}-cf-access-logs"
+                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}"
                 - Effect: Allow
                   Action:
                     - s3:PutObject
                     - s3:GetObject
-                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}-${AWS::AccountId}-cf-access-logs/*"
+                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}/*"
                 - Effect: Allow
                   Action:
                     - glue:CreatePartition
@@ -82,7 +82,7 @@ Resources:
                     SOURCE_TABLE: !Ref PartitionedGzTable
                     TARGET_TABLE: !Ref PartitionedParquetTable
                     DATABASE: !Ref CfLogsDatabase
-                    ATHENA_QUERY_RESULTS_LOCATION: !Sub "s3://${ResourcePrefix}-${AWS::AccountId}-cf-access-logs/athena-query-results"
+                    ATHENA_QUERY_RESULTS_LOCATION: !Sub "s3://${ResourcePrefix}/athena-query-results"
             Events:
               HourlyEvt:
                 Type: Schedule
@@ -107,11 +107,11 @@ Resources:
                   Action:
                     - s3:ListBucket
                     - s3:GetBucketLocation
-                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}-${AWS::AccountId}-cf-access-logs"
+                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}"
                 - Effect: Allow
                   Action:
                     - s3:PutObject
-                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}-${AWS::AccountId}-cf-access-logs/*"
+                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}/*"
                 - Effect: Allow
                   Action:
                     - glue:CreatePartition
@@ -123,7 +123,7 @@ Resources:
                 Variables:
                     TABLE: !Ref PartitionedGzTable
                     DATABASE: !Ref CfLogsDatabase
-                    ATHENA_QUERY_RESULTS_LOCATION: !Sub "s3://${ResourcePrefix}-${AWS::AccountId}-cf-access-logs/athena-query-results"
+                    ATHENA_QUERY_RESULTS_LOCATION: !Sub "s3://${ResourcePrefix}/athena-query-results"
             Events:
               HourlyEvt:
                 Type: Schedule
@@ -143,11 +143,11 @@ Resources:
                   Action:
                     - s3:GetObject
                     - s3:DeleteObject
-                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}-${AWS::AccountId}-cf-access-logs/${NewKeyPrefix}*"
+                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}/${NewKeyPrefix}*"
                 - Effect: Allow
                   Action:
                     - s3:PutObject
-                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}-${AWS::AccountId}-cf-access-logs/${GzKeyPrefix}*"
+                  Resource: !Sub "arn:${AWS::Partition}:s3:::${ResourcePrefix}/${GzKeyPrefix}*"
             Environment:
                 Variables:
                     TARGET_KEY_PREFIX: !Ref GzKeyPrefix
@@ -166,7 +166,7 @@ Resources:
         Type: "AWS::S3::Bucket"
         Description: "Bucket for Amazon CloudFront access logs"
         Properties:
-            BucketName: !Sub "${ResourcePrefix}-${AWS::AccountId}-cf-access-logs"
+            BucketName: !Sub "${ResourcePrefix}"
             LifecycleConfiguration:
               Rules:
                 - Id: ExpireAthenaQueryResults
@@ -300,7 +300,7 @@ Resources:
             - Name: sc_range_end
               Type: bigint
             InputFormat: org.apache.hadoop.mapred.TextInputFormat
-            Location: !Sub "s3://${ResourcePrefix}-${AWS::AccountId}-cf-access-logs/${GzKeyPrefix}"
+            Location: !Sub "s3://${ResourcePrefix}/${GzKeyPrefix}"
             SerdeInfo:
               Parameters:
                 field.delim": "\t"
@@ -395,7 +395,7 @@ Resources:
             - Name: sc_range_end
               Type: bigint
             InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
-            Location: !Sub "s3://${ResourcePrefix}-${AWS::AccountId}-cf-access-logs/${ParquetKeyPrefix}"
+            Location: !Sub "s3://${ResourcePrefix}/${ParquetKeyPrefix}"
             SerdeInfo:
               SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
     CombinedView:
