@@ -12,8 +12,8 @@ Description: >
 Parameters:
   ResourcePrefix: 
     Type: String
-    Default: '[nama-akun]-cfLogs'
-    AllowedPattern: '[A-Za-z0-9\-]+'
+    Default: '[nama-akun]-cflogs'
+    AllowedPattern: '[a-z0-9\-]+'
     MinLength: 1
     MaxLength: 20
     Description: >
