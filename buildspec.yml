@@ -6,12 +6,12 @@ phases:
       - aws cloudformation package
         --s3-prefix ${CODEBUILD_RESOLVED_SOURCE_VERSION}
         --template-file template.yaml
-        --s3-bucket ${deploymentbucket}
+        --s3-bucket ngulik-cf-logs
         --output-template-file SAM-template.yaml
         --region ap-southeast-1
       - aws s3 cp
         SAM-template.yaml
-        s3://${deploymentbucket}/${CODEBUILD_RESOLVED_SOURCE_VERSION}/
+        s3://ngulik-cf-logs/${CODEBUILD_RESOLVED_SOURCE_VERSION}/
         --region ap-southeast-1
       
 artifacts:

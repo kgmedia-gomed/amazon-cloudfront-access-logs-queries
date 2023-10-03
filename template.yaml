@@ -12,7 +12,7 @@ Description: >
 Parameters:
   ResourcePrefix: 
     Type: String
-    Default: 'myapp'
+    Default: '[nama-akun]-cfLogs'
     AllowedPattern: '[a-z0-9]+'
     MinLength: 1
     MaxLength: 20
@@ -81,7 +81,7 @@ Resources:
                 Variables:
                     SOURCE_TABLE: !Ref PartitionedGzTable
                     TARGET_TABLE: !Ref PartitionedParquetTable
-                    DATABASE: !Ref CfLogsDatabase1
+                    DATABASE: !Ref CfLogsDatabase
                     ATHENA_QUERY_RESULTS_LOCATION: !Sub "s3://${ResourcePrefix}/athena-query-results"
             Events:
               HourlyEvt:
@@ -122,7 +122,7 @@ Resources:
             Environment:
                 Variables:
                     TABLE: !Ref PartitionedGzTable
-                    DATABASE: !Ref CfLogsDatabase1
+                    DATABASE: !Ref CfLogsDatabase
                     ATHENA_QUERY_RESULTS_LOCATION: !Sub "s3://${ResourcePrefix}/athena-query-results"
             Events:
               HourlyEvt:
@@ -173,6 +173,10 @@ Resources:
                   Prefix: athena-query-results/
                   Status: Enabled
                   ExpirationInDays: 1
+                - Id: ExpireLogFiles
+                  Prefix: !Ref GzKeyPrefix
+                  Status: Enabled
+                  ExpirationInDays: 14
             BucketEncryption:
               ServerSideEncryptionConfiguration:
               - ServerSideEncryptionByDefault:
@@ -205,7 +209,7 @@ Resources:
 # - Partitioned Parquet Table
 # - Combined view of both tables
 
-    CfLogsDatabase1:
+    CfLogsDatabase:
         Type: AWS::Glue::Database
         Properties:
           CatalogId: !Ref AWS::AccountId
@@ -215,7 +219,7 @@ Resources:
       Type: AWS::Glue::Table
       Properties:
         CatalogId: !Ref AWS::AccountId
-        DatabaseName: !Ref CfLogsDatabase1
+        DatabaseName: !Ref CfLogsDatabase
         TableInput:
           Name: 'partitioned_gz'
           Description: 'Gzip logs delivered by Amazon CloudFront partitioned'
@@ -310,7 +314,7 @@ Resources:
       Type: AWS::Glue::Table
       Properties:
         CatalogId: !Ref AWS::AccountId
-        DatabaseName: !Ref CfLogsDatabase1
+        DatabaseName: !Ref CfLogsDatabase
         TableInput:
           Name: 'partitioned_parquet'
           Description: 'Parquet format access logs as transformed from gzip version'
@@ -402,7 +406,7 @@ Resources:
       Type: AWS::Glue::Table
       Properties:
         CatalogId: !Ref AWS::AccountId
-        DatabaseName: !Ref CfLogsDatabase1
+        DatabaseName: !Ref CfLogsDatabase
         TableInput:
           Name: 'combined'
           Description: 'combined view over gzip and parquet tables'
@@ -540,7 +544,7 @@ Resources:
                         {"name": "file", "type": "varchar"}
                       ]
                     }
-                  - { database: !Ref CfLogsDatabase1,
+                  - { database: !Ref CfLogsDatabase,
                     partitioned_gz_table: !Ref PartitionedGzTable,
                     partitioned_parquet_table: !Ref PartitionedParquetTable }
               - ' */'
