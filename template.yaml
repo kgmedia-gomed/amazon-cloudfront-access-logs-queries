@@ -81,7 +81,7 @@ Resources:
                 Variables:
                     SOURCE_TABLE: !Ref PartitionedGzTable
                     TARGET_TABLE: !Ref PartitionedParquetTable
-                    DATABASE: !Ref CfLogsDatabase
+                    DATABASE: !Ref CfLogsDatabase1
                     ATHENA_QUERY_RESULTS_LOCATION: !Sub "s3://${ResourcePrefix}/athena-query-results"
             Events:
               HourlyEvt:
@@ -122,7 +122,7 @@ Resources:
             Environment:
                 Variables:
                     TABLE: !Ref PartitionedGzTable
-                    DATABASE: !Ref CfLogsDatabase
+                    DATABASE: !Ref CfLogsDatabase1
                     ATHENA_QUERY_RESULTS_LOCATION: !Sub "s3://${ResourcePrefix}/athena-query-results"
             Events:
               HourlyEvt:
@@ -205,7 +205,7 @@ Resources:
 # - Partitioned Parquet Table
 # - Combined view of both tables
 
-    CfLogsDatabase:
+    CfLogsDatabase1:
         Type: AWS::Glue::Database
         Properties:
           CatalogId: !Ref AWS::AccountId
@@ -215,7 +215,7 @@ Resources:
       Type: AWS::Glue::Table
       Properties:
         CatalogId: !Ref AWS::AccountId
-        DatabaseName: !Ref CfLogsDatabase
+        DatabaseName: !Ref CfLogsDatabase1
         TableInput:
           Name: 'partitioned_gz'
           Description: 'Gzip logs delivered by Amazon CloudFront partitioned'
@@ -310,7 +310,7 @@ Resources:
       Type: AWS::Glue::Table
       Properties:
         CatalogId: !Ref AWS::AccountId
-        DatabaseName: !Ref CfLogsDatabase
+        DatabaseName: !Ref CfLogsDatabase1
         TableInput:
           Name: 'partitioned_parquet'
           Description: 'Parquet format access logs as transformed from gzip version'
@@ -402,7 +402,7 @@ Resources:
       Type: AWS::Glue::Table
       Properties:
         CatalogId: !Ref AWS::AccountId
-        DatabaseName: !Ref CfLogsDatabase
+        DatabaseName: !Ref CfLogsDatabase1
         TableInput:
           Name: 'combined'
           Description: 'combined view over gzip and parquet tables'
@@ -540,7 +540,7 @@ Resources:
                         {"name": "file", "type": "varchar"}
                       ]
                     }
-                  - { database: !Ref CfLogsDatabase,
+                  - { database: !Ref CfLogsDatabase1,
                     partitioned_gz_table: !Ref PartitionedGzTable,
                     partitioned_parquet_table: !Ref PartitionedParquetTable }
               - ' */'
