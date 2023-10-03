@@ -8,11 +8,11 @@ phases:
         --template-file template.yaml
         --s3-bucket ${deploymentbucket}
         --output-template-file SAM-template.yaml
-        --region us-east-1
+        --region ap-southeast-1
       - aws s3 cp
         SAM-template.yaml
         s3://${deploymentbucket}/${CODEBUILD_RESOLVED_SOURCE_VERSION}/
-        --region us-east-1
+        --region ap-southeast-1
       
 artifacts:
   type: zip
